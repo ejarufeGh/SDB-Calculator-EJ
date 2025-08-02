@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadoras EJ</title>
+    <!-- Tailwind CSS CDN para un estilizado moderno y responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome para iconos (usado en calculadora binaria y de divisas) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Enlace a la fuente Inter de Google Fonts (Arial es una fuente del sistema, no necesita CDN) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos generales para el cuerpo de la página */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Fondo claro */
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Estilos para el título principal */
+        h1 {
+            font-family: 'Arial', sans-serif; /* Fuente Arial */
+            color: #1f2937;
+            margin-bottom: 4rem; /* 2 espacios debajo del título */
+            text-align: center; /* Asegurar centrado */
+            font-size: 2rem; /* Tamaño más pequeño por defecto */
+        }
+        @media (min-width: 1024px) {
+            h1 {
+                font-size: 2.5rem; /* Tamaño para pantallas grandes */
+            }
+        }
+
+        /* Contenedor principal para todas las calculadoras */
+        .all-calculators-container {
+            display: flex;
+            flex-wrap: wrap; /* Permite que las calculadoras se envuelvan en pantallas pequeñas */
+            justify-content: space-between; /* Alinea los elementos a los extremos (izquierda y derecha) */
+            align-items: flex-start; /* Alinea los elementos al inicio */
+            gap: 2rem; /* Espacio entre las calculadoras */
+            width: 100%;
+            max-width: 1400px; /* Ancho máximo para el contenedor general */
+            padding-bottom: 80px; /* Espacio para el botón flotante */
+        }
+
+        /* Estilos para la Calculadora de Divisas */
+        .currency-calculator-container {
+            background-color: #ffffff;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            width: 100%; /* Permite que ocupe todo el ancho disponible en la fila */
+            max-width: 600px; /* AUMENTADO: Ancho máximo */
+            text-align: center;
+        }
+        @media (min-width: 1024px) {
+            .currency-calculator-container {
+                /* Para asegurar que cada una ocupe su lado en pantallas grandes */
+                width: calc(50% - 1rem); /* 50% menos la mitad del gap */
+            }
+        }
+        .currency-input-group label {
+            font-weight: 600;
+            color: #4a5568;
+        }
+        .currency-input-group input,
+        .currency-input-group select {
+            border: 2px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            font-size: 1rem;
+            color: #2d3748;
+            transition: all 0.2s ease-in-out;
+        }
+        .currency-input-group input:focus,
+        .currency-input-group select:focus {
+            border-color: #6366f1;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+        }
+        .currency-btn-primary {
+            background-color: #6366f1;
+            color: #ffffff;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: 700;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+        }
+        .currency-btn-primary:hover {
+            background-color: #4f46e5;
+            transform: translateY(-2px);
+        }
+        .currency-btn-primary:active {
+            transform: translateY(0);
+        }
+        .currency-btn-secondary {
+            background-color: #cbd5e1;
+            color: #4a5568;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .currency-btn-secondary:hover {
+            background-color: #a0aec0;
+            transform: translateY(-2px);
+        }
+        .currency-btn-secondary:active {
+            transform: translateY(0);
+        }
+        .currency-result-box {
+            background-color: #edf2f7;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+        .currency-message {
+            margin-top: 1.5rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .currency-message.error {
+            background-color: #fee2e2;
+            color: #ef4444;
+            border: 1px solid #fca5a5;
+        }
+        .currency-message.info {
+            background-color: #e0f2fe;
+            color: #3b82f6;
+            border: 1px solid #93c5fd;
+        }
+        /* Nuevo estilo para el campo de tipo de cambio */
+        .currency-rate-display {
+            background-color: #e2e8f0; /* Color de fondo suave */
+            border-radius: 0.75rem; /* Bordes redondeados */
+            padding: 1rem; /* Espaciado interno */
+            font-size: 1.125rem; /* Tamaño de fuente */
+            font-weight: 600; /* Texto seminegrita */
+            color: #4a5568; /* Color de texto gris oscuro */
+            margin-top: 1.5rem; /* Margen superior para separarlo del botón */
+            text-align: center; /* Centrar el texto */
+        }
+
+
+        /* Estilos para la Calculadora Estándar */
+        .standard-calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: minmax(100px, auto) repeat(7, 70px);
+            gap: 8px;
+            padding: 16px;
+            background-color: #ffffff;
+            border-radius: 16px;
+            max-width: 600px; /* AUMENTADO: Ancho máximo */
+            width: 100%; /* Permite que ocupe todo el ancho disponible en la fila */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        @media (min-width: 1024px) {
+            .standard-calculator-grid {
+                /* Para asegurar que cada una ocupe su lado en pantallas grandes */
+                width: calc(50% - 1rem); /* 50% menos la mitad del gap */
+            }
+        }
+        .standard-output {
+            grid-column: 1 / -1;
+            background-color: #e6e6e6;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 16px;
+            word-wrap: break-word;
+            word-break: break-all;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .standard-output .previous-operand {
+            color: #555555;
+            font-size: 1.25rem;
+            min-height: 1.25rem;
+            padding-top: 5px;
+        }
+        .standard-output .current-operand {
+            color: #000000;
+            font-size: 2.5rem;
+            font-weight: 500;
+            min-height: 2.5rem;
+            white-space: nowrap;
+            overflow-x: auto;
+            user-select: text;
+            caret-color: #0078d4;
+            padding-bottom: 5px;
+        }
+        .standard-output .current-operand::-webkit-scrollbar {
+            height: 6px;
+        }
+        .standard-output .current-operand::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .standard-output .current-operand::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        .standard-output .current-operand::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .standard-calculator-grid button {
+            cursor: pointer;
+            font-size: 1.5rem;
+            border: none;
+            outline: none;
+            background-color: #f3f3f3;
+            color: #000000;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .standard-calculator-grid button:hover {
+            background-color: #e0e0e0;
+        }
+        .standard-calculator-grid .operation-button,
+        .standard-calculator-grid .scientific-button {
+            background-color: #e0e0e0;
+        }
+        .standard-calculator-grid .operation-button:hover,
+        .standard-calculator-grid .scientific-button:hover {
+            background-color: #d0d0d0;
+        }
+        .standard-calculator-grid .equals {
+            background-color: #0078d4;
+            color: white;
+        }
+        .standard-calculator-grid .equals:hover {
+            background-color: #0060ad;
+        }
+        .standard-calculator-grid .clear-button,
+        .standard-calculator-grid .backspace-button,
+        .standard-calculator-grid .special-button,
+        .standard-calculator-grid .history-toggle-button {
+            background-color: #f3f3f3;
+            color: #000000;
+        }
+        .standard-calculator-grid .clear-button:hover,
+        .standard-calculator-grid .backspace-button:hover,
+        .standard-calculator-grid .special-button:hover,
+        .standard-calculator-grid .history-toggle-button:hover {
+            background-color: #e0e0e0;
+        }
+        /* Ajustes responsivos para pantallas pequeñas (hasta 640px) */
+        @media (max-width: 640px) {
+            .standard-calculator-grid {
+                padding: 10px;
+                gap: 5px;
+            }
+            .standard-calculator-grid button {
+                font-size: 1.2rem;
+                height: 60px;
+            }
+            .standard-output .current-operand {
+                font-size: 2rem;
+            }
+            .standard-output .previous-operand {
+                font-size: 1rem;
+            }
+        }
+        /* Estilos para el panel de historial (común a overlays) */
+        .standard-overlay-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .standard-overlay-panel.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .standard-overlay-content {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 16px;
+            max-width: 90%;
+            max-height: 90%;
+            width: 500px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        .standard-overlay-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+        .standard-overlay-header h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #000000;
+        }
+        .standard-overlay-close-button {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #555555;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+        .standard-overlay-close-button:hover {
+            background-color: #e0e0e0;
+        }
+        .standard-history-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .standard-history-item {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            color: #333333;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+        .standard-history-item:last-child {
+            margin-bottom: 0;
+        }
+        .standard-history-clear-button {
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 1.1rem;
+            transition: background-color 0.2s;
+        }
+        .standard-history-clear-button:hover {
+            background-color: #c82333;
+        }
+
+        /* Estilos para la Calculadora Decimal y Texto a Binario */
+        .binary-calculator-container {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            width: 100%;
+            max-width: 1200px; /* Ancho máximo para las 4 secciones */
+            display: flex;
+            flex-wrap: wrap; /* Permite que las secciones se envuelvan */
+            gap: 1.5rem;
+            justify-content: center; /* Centra las secciones horizontalmente */
+            margin-top: 2rem; /* Espacio entre la primera fila de calculadoras y esta */
+        }
+        .binary-conversion-section {
+            background-color: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            flex: 1 1 calc(50% - 1rem); /* 2 columnas en pantallas medianas */
+            max-width: calc(50% - 1rem);
+            box-sizing: border-box; /* Incluir padding y borde en el ancho */
+        }
+        /* En pantallas más grandes, 4 columnas */
+        @media (min-width: 1024px) {
+            .binary-conversion-section {
+                flex: 1 1 calc(25% - 1.2rem); /* Aproximadamente 4 columnas */
+                max-width: calc(25% - 1.2rem);
+            }
+        }
+        /* En pantallas muy pequeñas, 1 columna */
+        @media (max-width: 640px) {
+            .binary-conversion-section {
+                flex: 1 1 100%; /* 1 columna en pantallas pequeñas */
+                max-width: 100%;
+            }
+        }
+
+        .binary-input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+        .binary-input-group input, .binary-input-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background-color: #ffffff;
+            color: #1f2937;
+            resize: vertical;
+        }
+        .binary-input-group input:focus, .binary-input-group textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        .binary-btn {
+            background-color: #6366f1;
+            color: #ffffff;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 100%;
+        }
+        .binary-btn:hover {
+            background-color: #4f46e5;
+            transform: translateY(-1px);
+        }
+        .binary-btn:active {
+            transform: translateY(0);
+        }
+        .binary-error-message {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        .binary-section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        /* Botón flotante para Limpiar Todo (común para todas) */
+        #clearAll {
+            background-color: #ef4444;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 4rem;
+            height: 4rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
+            font-size: 1.5rem;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        #clearAll:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+        }
+        #clearAll:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <h1 class="text-4xl lg:text-5xl font-extrabold text-gray-900 text-center">Calculadoras EJ</h1>
+
+    <div class="all-calculators-container">
+        <!-- Calculadora Estándar (izquierda) -->
+        <div class="standard-calculator-grid" id="standardCalculatorGrid">
+            <div class="standard-output">
+                <div data-previous-operand class="previous-operand"></div>
+                <div data-current-operand class="current-operand" contenteditable="true" spellcheck="false" tabindex="0">0</div>
+            </div>
+
+            <button data-history-toggle class="history-toggle-button col-span-4">Historial</button>
+
+            <button data-scientific-operation="sqrt" class="scientific-button col-span-1">√</button>
+            <button data-scientific-operation="square" class="scientific-button col-span-1">x²</button>
+            <button data-scientific-operation="reciprocal" class="scientific-button col-span-1">1/x</button>
+            <button data-scientific-operation="%" class="scientific-button col-span-1">%</button>
+
+            <button data-all-clear class="clear-button col-span-1">C</button>
+            <button data-delete class="backspace-button col-span-1">←</button>
+            <button data-scientific-operation="power" class="scientific-button col-span-1">xʸ</button>
+            <button data-operation="/" class="operation-button col-span-1">/</button>
+
+            <button data-number class="col-span-1">7</button>
+            <button data-number class="col-span-1">8</button>
+            <button data-number class="col-span-1">9</button>
+            <button data-operation="*" class="operation-button col-span-1">*</button>
+
+            <button data-number class="col-span-1">4</button>
+            <button data-number class="col-span-1">5</button>
+            <button data-number class="col-span-1">6</button>
+            <button data-operation="-" class="operation-button col-span-1">-</button>
+
+            <button data-number class="col-span-1">1</button>
+            <button data-number class="col-span-1">2</button>
+            <button data-number class="col-span-1">3</button>
+            <button data-operation="+" class="operation-button col-span-1">+</button>
+
+            <button data-number="0" class="col-span-2">0</button>
+            <button data-number="." class="col-span-1">.</button>
+            <button data-equals class="equals col-span-1">=</button>
+        </div>
+
+        <!-- Calculadora de Divisas (derecha) -->
+        <div class="currency-calculator-container p-8 bg-white rounded-3xl shadow-xl">
+            <h2 class="text-3xl font-extrabold text-gray-800 mb-8">Calculadora de Divisas</h2>
+
+            <div class="space-y-6 mb-8">
+                <div class="currency-input-group">
+                    <label for="currencyAmount" class="block text-gray-700 text-lg mb-2 text-left">Monto a Convertir:</label>
+                    <input type="text" id="currencyAmount" value="1"
+                           class="w-full p-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-200 text-lg">
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <div class="currency-input-group flex-1">
+                        <label for="fromCurrency" class="block text-gray-700 text-lg mb-2 text-left">De:</label>
+                        <select id="fromCurrency"
+                                class="w-full p-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-200 text-lg">
+                        </select>
+                    </div>
+
+                    <button id="currencySwapCurrenciesBtn"
+                            class="currency-btn-secondary mt-8 self-center flex items-center justify-center w-12 h-12 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h18m-13.5-9L21 7.5m0 0L16.5 12M21 7.5H3" />
+                        </svg>
+                    </button>
+
+                    <div class="currency-input-group flex-1">
+                        <label for="toCurrency" class="block text-gray-700 text-lg mb-2 text-left">A:</label>
+                        <select id="toCurrency"
+                                class="w-full p-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-200 text-lg">
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button id="currencyConvertBtn"
+                    class="w-full py-4 px-6 bg-indigo-600 text-white font-bold rounded-xl text-xl hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200 transition duration-300 ease-in-out transform hover:-translate-y-1 shadow-lg">
+                Convertir Divisa
+            </button>
+
+            <!-- Nuevo campo para mostrar el tipo de cambio -->
+            <div id="currencyRateDisplay" class="currency-rate-display mt-6 hidden">
+                <!-- El tipo de cambio se mostrará aquí -->
+            </div>
+
+            <div id="currencyResult" class="currency-result-box mt-8 p-6 bg-blue-50 text-blue-800 font-extrabold text-3xl rounded-2xl">
+            </div>
+
+            <div id="currencyMessage" class="currency-message hidden mt-6">
+            </div>
+        </div>
+
+        <!-- Panel de Historial de Operaciones para la Calculadora Estándar -->
+        <div id="standardHistoryPanel" class="standard-overlay-panel">
+            <div class="standard-overlay-content standard-history-content">
+                <div class="standard-overlay-header standard-history-header">
+                    <h2>Historial</h2>
+                    <button class="standard-overlay-close-button standard-history-close-button" data-history-close>&times;</button>
+                </div>
+                <div class="standard-history-list" data-history-list>
+                    <p class="text-center text-gray-500 italic" data-no-history-message>No hay historial todavía.</p>
+                </div>
+                <button class="standard-history-clear-button" data-history-clear>Limpiar Historial</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calculadora Decimal y Texto a Binario (4 secciones en una fila) -->
+    <div class="binary-calculator-container">
+        <!-- Sección de Binario a Decimal -->
+        <div class="binary-conversion-section">
+            <h2 class="binary-section-title">Binario a Decimal</h2>
+            <div class="binary-input-group">
+                <label for="binaryInput">Binario:</label>
+                <textarea id="binaryInput" rows="6" placeholder="Ej: 1101 0101"></textarea>
+                <p id="binaryError" class="binary-error-message"></p>
+            </div>
+            <div class="binary-input-group">
+                <label for="decimalOutput">Decimal:</label>
+                <textarea id="decimalOutput" rows="6" readonly class="bg-gray-50 cursor-not-allowed"></textarea>
+            </div>
+            <button id="convertBinToDec" class="binary-btn">Convertir</button>
+        </div>
+
+        <!-- Sección de Decimal a Binario -->
+        <div class="binary-conversion-section">
+            <h2 class="binary-section-title">Decimal a Binario</h2>
+            <div class="binary-input-group">
+                <label for="decimalInput">Decimal:</label>
+                <textarea id="decimalInput" rows="6" placeholder="Ej: 53.000.000"></textarea>
+                <p id="decimalError" class="binary-error-message"></p>
+            </div>
+            <div class="binary-input-group">
+                <label for="binaryOutput">Binario:</label>
+                <textarea id="binaryOutput" rows="6" readonly class="bg-gray-50 cursor-not-allowed"></textarea>
+            </div>
+            <button id="convertDecToBin" class="binary-btn">Convertir</button>
+        </div>
+
+        <!-- Sección de Texto a Binario -->
+        <div class="binary-conversion-section">
+            <h2 class="binary-section-title">Texto a Binario</h2>
+            <div class="binary-input-group">
+                <label for="textInput">Texto:</label>
+                <textarea id="textInput" rows="3" placeholder="Ej: Hola Mundo"></textarea>
+            </div>
+            <div class="binary-input-group">
+                <label for="textBinaryOutput">Binario (UTF-8, 4 bits separados por espacio):</label>
+                <textarea id="textBinaryOutput" rows="6" readonly class="bg-gray-50 cursor-not-allowed"></textarea>
+            </div>
+            <button id="convertTextToBin" class="binary-btn">Convertir</button>
+        </div>
+
+        <!-- Sección de Binario a Texto -->
+        <div class="binary-conversion-section">
+            <h2 class="binary-section-title">Binario a Texto</h2>
+            <div class="binary-input-group">
+                <label for="binaryTextInput">Binario (UTF-8, bytes separados por espacio):</label>
+                <textarea id="binaryTextInput" rows="3" placeholder="Ej: 01001000 01101111"></textarea>
+                <p id="binaryTextError" class="binary-error-message"></p>
+            </div>
+            <div class="binary-input-group">
+                <label for="textOutput">Texto:</label>
+                <textarea id="textOutput" rows="6" readonly class="bg-gray-50 cursor-not-allowed"></textarea>
+            </div>
+            <button id="convertBinToText" class="binary-btn">Convertir</button>
+        </div>
+    </div>
+
+    <!-- Botón flotante para Limpiar Todo -->
+    <button id="clearAll">
+        <i class="fas fa-trash-alt"></i>
+    </button>
+
+    <script>
+        // --- LÓGICA DE LA CALCULADORA DE DIVISAS ---
+        const currencyAmountInput = document.getElementById('currencyAmount');
+        const fromCurrencySelect = document.getElementById('fromCurrency');
+        const toCurrencySelect = document.getElementById('toCurrency');
+        const currencyConvertBtn = document.getElementById('currencyConvertBtn');
+        const currencySwapCurrenciesBtn = document.getElementById('currencySwapCurrenciesBtn');
+        const currencyResultDiv = document.getElementById('currencyResult');
+        const currencyMessageDiv = document.getElementById('currencyMessage');
+        const currencyRateDisplayDiv = document.getElementById('currencyRateDisplay'); // Nuevo elemento para la tasa
+
+        const API_KEY = 'cd82ee4dc4e556ee9c12a710'; // Clave API de ExchangeRate-API
+        const BASE_API_URL = `https://v6.exchangerate-api.com/v6/${API_KEY}/latest/`;
+
+        const supportedCurrencies = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'INR', 'MXN', 'BRL', 'PEN', 'GHS'].sort();
+
+        function populateCurrencySelectors() {
+            supportedCurrencies.forEach(currencyCode => {
+                const optionFrom = document.createElement('option');
+                optionFrom.value = currencyCode;
+                optionFrom.textContent = currencyCode;
+                fromCurrencySelect.appendChild(optionFrom);
+
+                const optionTo = document.createElement('option');
+                optionTo.value = currencyCode;
+                optionTo.textContent = currencyCode;
+                toCurrencySelect.appendChild(optionTo);
+            });
+
+            fromCurrencySelect.value = 'USD';
+            toCurrencySelect.value = 'PEN';
+        }
+
+        function showCurrencyMessage(msg, type = 'info') {
+            currencyMessageDiv.textContent = msg;
+            currencyMessageDiv.className = `currency-message mt-6 ${type === 'error' ? 'error' : 'info'}`;
+            currencyMessageDiv.classList.remove('hidden');
+        }
+
+        function hideCurrencyMessage() {
+            currencyMessageDiv.classList.add('hidden');
+        }
+
+        function formatNumberForDisplay(num) {
+            return new Intl.NumberFormat('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
+        }
+
+        function parseFormattedInput(str) {
+            const cleanStr = str.replace(/\./g, '').replace(/,/g, '.');
+            return parseFloat(cleanStr);
+        }
+
+        function formatCurrencyAmountInput() {
+            let parsed = parseFormattedInput(currencyAmountInput.value);
+            if (isNaN(parsed)) {
+                currencyAmountInput.value = formatNumberForDisplay(0);
+            } else {
+                currencyAmountInput.value = formatNumberForDisplay(parsed);
+            }
+        }
+
+        function unformatCurrencyAmountInput() {
+            let parsed = parseFormattedInput(currencyAmountInput.value);
+            if (!isNaN(parsed)) {
+                currencyAmountInput.value = parsed.toString();
+            } else {
+                currencyAmountInput.value = '';
+            }
+        }
+
+        async function convertCurrency() {
+            hideCurrencyMessage();
+            currencyResultDiv.textContent = '';
+            currencyRateDisplayDiv.classList.add('hidden'); // Ocultar tasa hasta que se obtenga
+
+            const amount = parseFormattedInput(currencyAmountInput.value);
+            const fromCurrency = fromCurrencySelect.value;
+            const toCurrency = toCurrencySelect.value;
+
+            if (isNaN(amount) || amount <= 0) {
+                showCurrencyMessage('Por favor, introduce un monto válido.', 'error');
+                return;
+            }
+
+            showCurrencyMessage('Obteniendo tasas de cambio en tiempo real...', 'info');
+
+            let retries = 0;
+            const maxRetries = 3;
+            const baseDelay = 1000;
+
+            while (retries < maxRetries) {
+                try {
+                    const apiUrl = `${BASE_API_URL}${fromCurrency}`;
+                    const response = await fetch(apiUrl);
+
+                    if (!response.ok) {
+                        if (response.status === 429) {
+                            retries++;
+                            const delay = baseDelay * Math.pow(2, retries - 1);
+                            console.warn(`Demasiadas solicitudes. Reintentando en ${delay / 1000} segundos...`);
+                            showCurrencyMessage(`Demasiadas solicitudes. Reintentando en ${delay / 1000} segundos...`, 'info');
+                            await new Promise(res => setTimeout(res, delay));
+                            continue;
+                        }
+                        throw new Error(`Error HTTP: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+
+                    if (data.result === 'error') {
+                        throw new Error(`Error de la API: ${data['error-type']}`);
+                    }
+
+                    const rate = data.conversion_rates[toCurrency];
+
+                    if (!rate) {
+                        showCurrencyMessage(`No se pudo obtener la tasa para ${toCurrency}.`, 'error');
+                        return;
+                    }
+
+                    const convertedAmount = amount * rate;
+
+                    // Mostrar el tipo de cambio
+                    currencyRateDisplayDiv.textContent = `1 ${fromCurrency} = ${rate.toFixed(4)} ${toCurrency}`;
+                    currencyRateDisplayDiv.classList.remove('hidden');
+
+                    const formattedAmountDisplay = formatNumberForDisplay(amount);
+                    const formattedConvertedAmount = formatNumberForDisplay(convertedAmount);
+
+                    currencyResultDiv.textContent = `${formattedAmountDisplay} ${fromCurrency} = ${formattedConvertedAmount} ${toCurrency}`;
+                    hideCurrencyMessage();
+                    return;
+
+                } catch (error) {
+                    console.error('Error al obtener tasas de cambio de la API:', error);
+                    showCurrencyMessage('Ocurrió un error al obtener las tasas de cambio. Inténtalo de nuevo.', 'error');
+                    currencyRateDisplayDiv.classList.add('hidden'); // Ocultar si hay error
+                    break;
+                }
+            }
+            if (retries === maxRetries) {
+                 showCurrencyMessage('Se agotaron los reintentos. No se pudieron obtener las tasas de cambio. Por favor, inténtalo más tarde.', 'error');
+                 currencyRateDisplayDiv.classList.add('hidden'); // Ocultar si hay error
+            }
+        }
+
+        function swapCurrencies() {
+            const temp = fromCurrencySelect.value;
+            fromCurrencySelect.value = toCurrencySelect.value;
+            toCurrencySelect.value = temp;
+            convertCurrency();
+            formatCurrencyAmountInput();
+        }
+
+        // --- LÓGICA DE LA CALCULADORA ESTÁNDAR ---
+        // Funciones auxiliares para manejar el cursor en elementos contenteditable
+        function getCaretPosition(editableDiv) {
+            let caretPos = 0;
+            const sel = window.getSelection();
+            if (sel.rangeCount > 0) {
+                const range = sel.getRangeAt(0);
+                const preCaretRange = range.cloneRange();
+                preCaretRange.selectNodeContents(editableDiv);
+                preCaretRange.setEnd(range.endContainer, range.endOffset);
+                caretPos = preCaretRange.toString().length;
+            }
+            return caretPos;
+        }
+
+        function setCaretPosition(editableDiv, position) {
+            const range = document.createRange();
+            const sel = window.getSelection();
+            let currentPos = 0;
+            let found = false;
+
+            function traverseNodes(node) {
+                if (found) return;
+                if (node.nodeType === Node.TEXT_NODE) {
+                    if (currentPos + node.length >= position) {
+                        range.setStart(node, position - currentPos);
+                        range.collapse(true);
+                        found = true;
+                    } else {
+                        currentPos += node.length;
+                    }
+                } else {
+                    for (let i = 0; i < node.childNodes.length; i++) {
+                        traverseNodes(node.childNodes[i]);
+                        if (found) return;
+                    }
+                }
+            }
+
+            traverseNodes(editableDiv);
+
+            if (found) {
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } else if (editableDiv.childNodes.length === 0) {
+                range.setStart(editableDiv, 0);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } else {
+                range.selectNodeContents(editableDiv);
+                range.collapse(false);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+        }
+
+        function cleanNumberString(numStr) {
+            if (typeof numStr !== 'string') return '';
+            const cleaned = numStr.replace(/,/g, '').trim();
+            if (cleaned.toLowerCase().includes('e') && !isNaN(parseFloat(cleaned))) {
+                return parseFloat(cleaned).toString();
+            }
+            return cleaned;
+        }
+
+        class StandardCalculator {
+            constructor(previousOperandTextElement, currentOperandTextElement, historyListElement, noHistoryMessageElement) {
+                this.previousOperandTextElement = previousOperandTextElement;
+                this.currentOperandTextElement = currentOperandTextElement;
+                this.historyListElement = historyListElement;
+                this.noHistoryMessageElement = noHistoryMessageElement;
+                this.history = [];
+                this.previousOperandValue = '';
+                this.operation = undefined;
+                this.isResultDisplayed = false;
+                this.clear();
+            }
+
+            clear() {
+                this.currentOperandTextElement.innerText = '0';
+                this.previousOperandTextElement.innerText = '';
+                this.previousOperandValue = '';
+                this.operation = undefined;
+                this.isResultDisplayed = false;
+                // No llamamos a focus aquí, el focus será manejado por el evento de click o tab
+                setCaretPosition(this.currentOperandTextElement, this.currentOperandTextElement.innerText.length);
+            }
+
+            delete() {
+                if (this.currentOperandTextElement.innerText.includes('Error')) {
+                    this.clear();
+                    return;
+                }
+
+                const currentCaretPos = getCaretPosition(this.currentOperandTextElement);
+                let originalText = cleanNumberString(this.currentOperandTextElement.innerText);
+
+                if (originalText.length === 0 || (originalText === '0' && originalText.length === 1)) {
+                    this.currentOperandTextElement.innerText = '0';
+                    setCaretPosition(this.currentOperandTextElement, 1);
+                    return;
+                }
+
+                let newText = originalText;
+                let newCaretPos = currentCaretPos;
+
+                const sel = window.getSelection();
+                if (sel.rangeCount > 0 && !sel.getRangeAt(0).collapsed) {
+                    const range = sel.getRangeAt(0);
+                    const startCleanPos = getCaretPosition(originalText.substring(0, range.startOffset));
+                    const endCleanPos = getCaretPosition(originalText.substring(0, range.endOffset));
+
+                    newText = originalText.slice(0, startCleanPos) + originalText.slice(endCleanPos);
+                    newCaretPos = startCleanPos;
+                } else if (currentCaretPos > 0) {
+                    newText = originalText.slice(0, currentCaretPos - 1) + originalText.slice(currentCaretPos);
+                    newCaretPos = currentCaretPos - 1;
+                } else {
+                    return;
+                }
+
+                if (newText === '') {
+                    newText = '0';
+                    newCaretPos = 1;
+                } else if (newText === '.') {
+                    newText = '0.';
+                    newCaretPos = 2;
+                }
+
+                const displayValue = this.getDisplayNumber(newText);
+                this.currentOperandTextElement.innerText = displayValue;
+
+                const cleanedDisplayValue = cleanNumberString(displayValue);
+                const diff = displayValue.length - cleanedDisplayValue.length;
+                setCaretPosition(this.currentOperandTextElement, Math.max(0, newCaretPos + diff));
+
+                // No llamamos a focus aquí
+            }
+
+            appendNumber(number) {
+                if (this.currentOperandTextElement.innerText.includes('Error')) {
+                    this.clear();
+                }
+
+                const currentCaretPos = getCaretPosition(this.currentOperandTextElement);
+                let originalText = cleanNumberString(this.currentOperandTextElement.innerText);
+
+                let newText = originalText;
+                let newCaretPos = currentCaretPos;
+
+                const sel = window.getSelection();
+                if (sel.rangeCount > 0 && !sel.getRangeAt(0).collapsed) {
+                    const range = sel.getRangeAt(0);
+                    const startCleanPos = getCaretPosition(originalText.substring(0, range.startOffset));
+                    const endCleanPos = getCaretPosition(originalText.substring(0, range.endOffset));
+
+                    newText = originalText.slice(0, startCleanPos) + number + originalText.slice(endCleanPos);
+                    newCaretPos = startCleanPos + number.length;
+                } else {
+                    if (this.isResultDisplayed) {
+                        newText = (number === '.') ? '0.' : number.toString();
+                        newCaretPos = newText.length;
+                        this.isResultDisplayed = false;
+                    } else if (originalText === '0' && number !== '.') {
+                        newText = number.toString();
+                        newCaretPos = 1;
+                    } else if (number === '.') {
+                        if (originalText.includes('.')) {
+                            return;
+                        }
+                        newText = originalText.slice(0, currentCaretPos) + number + originalText.slice(currentCaretPos);
+                        newCaretPos = currentCaretPos + number.length;
+                    } else {
+                        newText = originalText.slice(0, currentCaretPos) + number + originalText.slice(currentCaretPos);
+                        newCaretPos = currentCaretPos + number.length;
+                    }
+                }
+                
+                const displayValue = this.getDisplayNumber(newText);
+                this.currentOperandTextElement.innerText = displayValue;
+
+                const cleanedDisplayValue = cleanNumberString(displayValue);
+                const diff = displayValue.length - cleanedDisplayValue.length;
+                setCaretPosition(this.currentOperandTextElement, newCaretPos + diff);
+                // No llamamos a focus aquí
+            }
+
+            chooseOperation(operation) {
+                let currentParsed = parseFloat(cleanNumberString(this.currentOperandTextElement.innerText));
+
+                if (isNaN(currentParsed) && this.currentOperandTextElement.innerText !== 'Error') {
+                    if (this.previousOperandValue !== '') {
+                        currentParsed = this.previousOperandValue;
+                    } else {
+                        return;
+                    }
+                } else if (this.currentOperandTextElement.innerText === 'Error') {
+                    return;
+                }
+
+                if (this.previousOperandValue !== '' && this.operation !== undefined) {
+                    this.compute();
+                    currentParsed = parseFloat(cleanNumberString(this.currentOperandTextElement.innerText));
+                }
+                
+                this.operation = operation;
+                this.previousOperandValue = currentParsed;
+                this.previousOperandTextElement.innerText = `${this.getDisplayNumber(this.previousOperandValue)} ${this.operation}`;
+                this.currentOperandTextElement.innerText = '0';
+                this.isResultDisplayed = false;
+                // No llamamos a focus aquí
+            }
+
+            compute() {
+                let computation;
+                const prev = parseFloat(this.previousOperandValue);
+                const current = parseFloat(cleanNumberString(this.currentOperandTextElement.innerText));
+
+                if (isNaN(prev) && !isNaN(current) && !this.operation) {
+                    this.currentOperandTextElement.innerText = this.getDisplayNumber(current);
+                    this.previousOperandTextElement.innerText = '';
+                    this.previousOperandValue = '';
+                    this.operation = undefined;
+                    this.isResultDisplayed = true;
+                    // No llamamos a focus aquí
+                    setCaretPosition(this.currentOperandTextElement, this.currentOperandTextElement.innerText.length);
+                    return;
+                }
+
+                if (isNaN(prev) || isNaN(current)) {
+                    this.currentOperandTextElement.innerText = 'Error';
+                    this.previousOperandTextElement.innerText = '';
+                    this.previousOperandValue = '';
+                    this.operation = undefined;
+                    this.isResultDisplayed = true;
+                    // No llamamos a focus aquí
+                    return;
+                }
+
+                const expression = `${this.getDisplayNumber(prev)} ${this.operation} ${this.getDisplayNumber(current)}`;
+
+                switch (this.operation) {
+                    case '+':
+                        computation = prev + current;
+                        break;
+                    case '-':
+                        computation = prev - current;
+                        break;
+                    case '*':
+                        computation = prev * current;
+                        break;
+                    case '/':
+                        if (current === 0) {
+                            computation = 'Error';
+                        } else {
+                            computation = prev / current;
+                        }
+                        break;
+                    case '^':
+                        computation = Math.pow(prev, current);
+                        break;
+                    default:
+                        this.currentOperandTextElement.innerText = this.getDisplayNumber(current);
+                        this.previousOperandTextElement.innerText = '';
+                        this.previousOperandValue = '';
+                        this.operation = undefined;
+                        this.isResultDisplayed = true;
+                        // No llamamos a focus aquí
+                        setCaretPosition(this.currentOperandTextElement, this.currentOperandTextElement.innerText.length);
+                        return;
+                }
+
+                if (computation !== 'Error') {
+                    this.history.push({
+                        expression: expression,
+                        result: this.getDisplayNumber(computation)
+                    });
+                }
+
+                this.currentOperandTextElement.innerText = this.getDisplayNumber(computation);
+                this.previousOperandTextElement.innerText = '';
+                this.previousOperandValue = '';
+                this.operation = undefined;
+                this.isResultDisplayed = true;
+                // No llamamos a focus aquí
+                setCaretPosition(this.currentOperandTextElement, this.currentOperandTextElement.innerText.length);
+            }
+
+            performScientificOperation(operationType) {
+                let currentVal = parseFloat(cleanNumberString(this.currentOperandTextElement.innerText));
+
+                if (this.currentOperandTextElement.innerText.includes('Error')) {
+                    this.clear();
+                    return;
+                }
+                if (isNaN(currentVal)) {
+                    this.currentOperandTextElement.innerText = 'Error';
+                    this.isResultDisplayed = true;
+                    return;
+                }
+
+                let result;
+
+                switch (operationType) {
+                    case 'sqrt':
+                        if (currentVal < 0) { result = 'Error'; break; }
+                        result = Math.sqrt(currentVal);
+                        break;
+                    case 'square':
+                        result = currentVal * currentVal;
+                        break;
+                    case 'reciprocal':
+                        if (currentVal === 0) { result = 'Error'; break; }
+                        result = 1 / currentVal;
+                        break;
+                    case 'power':
+                        this.chooseOperation('^');
+                        return;
+                    case '%':
+                        if (this.previousOperandValue !== '' && this.operation !== undefined) {
+                            const prevVal = parseFloat(this.previousOperandValue);
+                            if (isNaN(prevVal)) { result = 'Error'; break; }
+
+                            let tempResult;
+                            const expressionForHistory = `${this.getDisplayNumber(prevVal)} ${this.operation} ${this.getDisplayNumber(currentVal)}%`;
+
+                            switch (this.operation) {
+                                case '+':
+                                    tempResult = prevVal + (prevVal * (currentVal / 100));
+                                    break;
+                                case '-':
+                                    tempResult = prevVal - (prevVal * (currentVal / 100));
+                                    break;
+                                case '*':
+                                    tempResult = prevVal * (currentVal / 100);
+                                    break;
+                                case '/':
+                                    tempResult = prevVal / (currentVal / 100);
+                                    break;
+                                case '^':
+                                    tempResult = Math.pow(prevVal, (currentVal / 100));
+                                    break;
+                                default:
+                                    tempResult = 'Error';
+                            }
+                            result = tempResult;
+
+                            if (result !== 'Error') {
+                                this.history.push({
+                                    expression: expressionForHistory,
+                                    result: this.getDisplayNumber(result)
+                                });
+                            }
+                            this.currentOperandTextElement.innerText = this.getDisplayNumber(result);
+                            this.previousOperandTextElement.innerText = '';
+                            this.previousOperandValue = '';
+                            this.operation = undefined;
+                            this.isResultDisplayed = true;
+                            // No llamamos a focus aquí
+                            setCaretPosition(this.currentOperandTextElement, this.currentOperandTextElement.innerText.length);
+                            return;
+                        } else {
+                            result = currentVal / 100;
+                        }
+                        break;
+                    default:
+                        return;
+                }
+
+                this.currentOperandTextElement.innerText = this.getDisplayNumber(result);
+                this.isResultDisplayed = true;
+                // No llamamos a focus aquí
+                setCaretPosition(this.currentOperandTextElement, this.currentOperandTextElement.innerText.length);
+            }
+
+            getDisplayNumber(displayInput) {
+                const isNumber = typeof displayInput === 'number';
+                const stringInput = isNumber ? displayInput.toString() : displayInput;
+
+                if (stringInput === 'Error' || stringInput === 'Infinity' || stringInput === '-Infinity' || stringInput === 'NaN') {
+                    return stringInput;
+                }
+
+                const hasTrailingDot = !isNumber && stringInput.endsWith('.');
+                
+                let num = parseFloat(stringInput);
+
+                if (isNaN(num)) {
+                    return stringInput === '.' ? '0.' : '0';
+                }
+
+                if ( (isNumber && (Math.abs(num) >= 1e15 || (Math.abs(num) < 1e-9 && num !== 0))) ||
+                     (!isNumber && stringInput.toLowerCase().includes('e') && !isNaN(num)) ) {
+                    return num.toExponential(5);
+                }
+
+                const parts = stringInput.split('.');
+                const integerDigits = parseFloat(parts[0]);
+                const decimalDigits = parts[1];
+                let formattedInteger;
+
+                if (isNaN(integerDigits)) {
+                    formattedInteger = '';
+                } else {
+                    formattedInteger = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(integerDigits);
+                }
+
+                if (decimalDigits != null) {
+                    return `${formattedInteger}.${decimalDigits}`;
+                } else {
+                    return hasTrailingDot ? `${formattedInteger}.` : formattedInteger;
+                }
+            }
+
+            toggleHistory(show) {
+                const historyPanel = document.getElementById('standardHistoryPanel');
+                if (show) {
+                    historyPanel.classList.add('visible');
+                    this.renderHistory();
+                } else {
+                    historyPanel.classList.remove('visible');
+                }
+            }
+
+            renderHistory() {
+                this.historyListElement.innerHTML = '';
+                if (this.history.length === 0) {
+                    this.noHistoryMessageElement.style.display = 'block';
+                } else {
+                    this.noHistoryMessageElement.style.display = 'none';
+                    this.history.slice().reverse().forEach(item => {
+                        const historyItem = document.createElement('div');
+                        historyItem.classList.add('standard-history-item');
+                        historyItem.innerHTML = `<div class="text-gray-600 text-sm">${item.expression}</div><div class="font-bold text-lg">${item.result}</div>`;
+                        this.historyListElement.appendChild(historyItem);
+                    });
+                }
+            }
+
+            clearHistory() {
+                this.history = [];
+                this.renderHistory();
+            }
+        }
+
+        // --- LÓGICA DE LA CALCULADORA DECIMAL Y BINARIA ---
+        const binaryInput = document.getElementById('binaryInput');
+        const decimalOutput = document.getElementById('decimalOutput');
+        const binaryError = document.getElementById('binaryError');
+        const convertBinToDecBtn = document.getElementById('convertBinToDec');
+
+        const decimalInput = document.getElementById('decimalInput');
+        const binaryOutput = document.getElementById('binaryOutput');
+        const decimalError = document.getElementById('decimalError');
+        const convertDecToBinBtn = document.getElementById('convertDecToBin');
+
+        const textInput = document.getElementById('textInput');
+        const textBinaryOutput = document.getElementById('textBinaryOutput');
+        const convertTextToBinBtn = document.getElementById('convertTextToBin');
+
+        const binaryTextInput = document.getElementById('binaryTextInput');
+        const textOutput = document.getElementById('textOutput');
+        const binaryTextError = document.getElementById('binaryTextError');
+        const convertBinToTextBtn = document.getElementById('convertBinToText');
+
+        const clearAllBtn = document.getElementById('clearAll');
+
+        function formatDecimalNumber(numStr) {
+            let cleanedNum = numStr.replace(/[^\d-]/g, '');
+            if (cleanedNum === '' || cleanedNum === '-') return cleanedNum;
+            const isNegative = cleanedNum.startsWith('-');
+            if (isNegative) {
+                cleanedNum = cleanedNum.substring(1);
+            }
+            const formattedIntegerPart = cleanedNum.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            return (isNegative ? '-' : '') + formattedIntegerPart;
+        }
+
+        function cleanBinaryDecimalNumber(numStr) { // Renamed to avoid clash
+            return numStr.replace(/\./g, '');
+        }
+
+        function formatBinaryNumber(binaryStr) {
+            if (!binaryStr) return '';
+            let isNegative = false;
+            let tempBinaryStr = binaryStr;
+
+            if (tempBinaryStr.startsWith('-')) {
+                isNegative = true;
+                tempBinaryStr = tempBinaryStr.substring(1);
+            }
+            let actualBinaryStr = cleanBinaryNumber(tempBinaryStr);
+            let reversed = actualBinaryStr.split('').reverse().join('');
+            let formattedReversed = '';
+            for (let i = 0; i < reversed.length; i++) {
+                formattedReversed += reversed[i];
+                if ((i + 1) % 4 === 0 && (i + 1) !== reversed.length) {
+                    formattedReversed += ' ';
+                }
+            }
+            return (isNegative ? '-' : '') + formattedReversed.split('').reverse().join('');
+        }
+
+        function cleanBinaryNumber(formattedBinaryStr) {
+            return formattedBinaryStr.replace(/\s/g, '');
+        }
+
+        function binToDec(binaryStr) {
+            const cleanedBinary = cleanBinaryNumber(binaryStr);
+            if (!/^[01]+$/.test(cleanedBinary)) {
+                return 'Entrada binaria inválida. Use solo 0 y 1.';
+            }
+            if (cleanedBinary.length === 0) {
+                return 'Por favor, ingrese un número binario.';
+            }
+            try {
+                const decimalBigInt = BigInt('0b' + cleanedBinary);
+                return decimalBigInt.toString();
+            } catch (e) {
+                return 'Error al convertir: ' + e.message;
+            }
+        }
+
+        function decToBin(decimalStr) {
+            const cleanedDecimal = cleanBinaryDecimalNumber(decimalStr);
+            if (!/^-?\d+$/.test(cleanedDecimal)) {
+                return 'Entrada decimal inválida. Use solo dígitos.';
+            }
+            if (cleanedDecimal.length === 0 || (cleanedDecimal === '-' && decimalStr.length === 1)) {
+                return 'Por favor, ingrese un número decimal.';
+            }
+            try {
+                const decimalBigInt = BigInt(cleanedDecimal);
+                return decimalBigInt.toString(2);
+            } catch (e) {
+                return 'Error al convertir: ' + e.message;
+            }
+        }
+
+        function textToBin(text) {
+            if (text.length === 0) {
+                return '';
+            }
+            const encoder = new TextEncoder();
+            const utf8Bytes = encoder.encode(text);
+            let binaryResult = [];
+            for (const byte of utf8Bytes) {
+                binaryResult.push(byte.toString(2).padStart(8, '0'));
+            }
+            return binaryResult.join(' ');
+        }
+
+        function binToText(binaryText) {
+            const cleanedBinaryText = binaryText.replace(/\s/g, '');
+            const binaryBytes = cleanedBinaryText.trim().match(/.{8}/g) || [];
+
+            if (binaryBytes.length === 0) {
+                return '';
+            }
+
+            const decodedBytes = [];
+            for (const binByte of binaryBytes) {
+                if (!/^[01]{8}$/.test(binByte)) {
+                    return 'Error: Asegúrese de que los bytes binarios sean secuencias de 8 bits (ej. 01001000) separadas por espacios.';
+                }
+                const decimalValue = parseInt(binByte, 2);
+                decodedBytes.push(decimalValue);
+            }
+
+            try {
+                const decoder = new TextDecoder('utf-8');
+                return decoder.decode(new Uint8Array(decodedBytes));
+            } catch (e) {
+                return 'Error al decodificar binario a texto: ' + e.message;
+            }
+        }
+
+        // --- Manejadores de Eventos Globales e Inicialización ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicialización de Calculadora de Divisas
+            populateCurrencySelectors();
+            currencyAmountInput.value = formatNumberForDisplay(parseFormattedInput(currencyAmountInput.value));
+            currencyConvertBtn.addEventListener('click', convertCurrency);
+            currencySwapCurrenciesBtn.addEventListener('click', swapCurrencies);
+            currencyAmountInput.addEventListener('focus', unformatCurrencyAmountInput);
+            currencyAmountInput.addEventListener('blur', formatCurrencyAmountInput);
+            currencyAmountInput.addEventListener('keyup', (event) => {
+                if (event.key === 'Enter') {
+                    convertCurrency();
+                }
+            });
+            convertCurrency(); // Conversión inicial al cargar
+
+            // Inicialización de Calculadora Estándar
+            const standardNumberButtons = document.querySelectorAll('[data-number]');
+            const standardOperationButtons = document.querySelectorAll('[data-operation]');
+            const standardScientificOperationButtons = document.querySelectorAll('[data-scientific-operation]');
+            const standardEqualsButton = document.querySelector('[data-equals]');
+            const standardDeleteButton = document.querySelector('[data-delete]');
+            const standardAllClearButton = document.querySelector('[data-all-clear]');
+            const standardPreviousOperandTextElement = document.querySelector('[data-previous-operand]');
+            const standardCurrentOperandTextElement = document.querySelector('[data-current-operand]');
+            const standardHistoryToggleButton = document.querySelector('[data-history-toggle]');
+            const standardHistoryCloseButton = document.querySelector('[data-history-close]');
+            const standardHistoryClearButton = document.querySelector('[data-history-clear]');
+            const standardHistoryListElement = document.querySelector('[data-history-list]');
+            const standardNoHistoryMessageElement = document.querySelector('[data-no-history-message]');
+
+            const standardCalculator = new StandardCalculator(
+                standardPreviousOperandTextElement,
+                standardCurrentOperandTextElement,
+                standardHistoryListElement,
+                standardNoHistoryMessageElement
+            );
+
+            // Event listeners para botones numéricos y de operación
+            standardNumberButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    standardCurrentOperandTextElement.focus(); // Asegurar foco al hacer clic en un botón numérico
+                    standardCalculator.appendNumber(button.innerText);
+                });
+            });
+
+            standardOperationButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    standardCurrentOperandTextElement.focus(); // Asegurar foco al hacer clic en un botón de operación
+                    standardCalculator.chooseOperation(button.dataset.operation);
+                });
+            });
+
+            standardScientificOperationButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    standardCurrentOperandTextElement.focus(); // Asegurar foco al hacer clic en un botón científico
+                    standardCalculator.performScientificOperation(button.dataset.scientificOperation);
+                });
+            });
+
+            standardEqualsButton.addEventListener('click', () => {
+                standardCurrentOperandTextElement.focus(); // Asegurar foco al hacer clic en '='
+                standardCalculator.compute();
+            });
+
+            standardAllClearButton.addEventListener('click', () => {
+                standardCurrentOperandTextElement.focus(); // Asegurar foco al hacer clic en 'C'
+                standardCalculator.clear();
+            });
+
+            standardDeleteButton.addEventListener('click', () => {
+                standardCurrentOperandTextElement.focus(); // Asegurar foco al hacer clic en '←'
+                standardCalculator.delete();
+            });
+
+            standardHistoryToggleButton.addEventListener('click', () => {
+                standardCalculator.toggleHistory(true);
+            });
+
+            standardHistoryCloseButton.addEventListener('click', () => {
+                standardCalculator.toggleHistory(false);
+            });
+
+            standardHistoryClearButton.addEventListener('click', () => {
+                standardCalculator.clearHistory();
+            });
+
+            // Event listener de teclado directamente en el elemento contenteditable
+            standardCurrentOperandTextElement.addEventListener('keydown', e => {
+                // Si el historial está abierto, solo permite 'Escape' para cerrarlo
+                const historyPanelVisible = document.getElementById('standardHistoryPanel').classList.contains('visible');
+                if (historyPanelVisible) {
+                    if (e.key === 'Escape') {
+                        standardCalculator.toggleHistory(false);
+                    }
+                    return; // No procesar otras teclas si el panel está abierto
+                }
+
+                // Captura teclas que deben interactuar con los métodos de la calculadora
+                // Maneja números y punto decimal
+                if ((e.key >= '0' && e.key <= '9')) { // Numbers
+                    standardCalculator.appendNumber(e.key);
+                    e.preventDefault(); 
+                } else if (e.key === '.') { // Decimal point
+                    standardCalculator.appendNumber(e.key);
+                    e.preventDefault();
+                }
+                else if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {
+                    standardCalculator.chooseOperation(e.key);
+                    e.preventDefault();
+                } else if (e.key === 'Enter' || e.key === '=') {
+                    e.preventDefault(); // Previene el comportamiento por defecto de 'Enter'
+                    standardCalculator.compute();
+                } else if (e.key === 'Backspace') {
+                    e.preventDefault(); // Previene el comportamiento por defecto de Backspace en contenteditable
+                    standardCalculator.delete();
+                } else if (e.key === 'Escape') { // 'Escape' para limpiar todo
+                    e.preventDefault();
+                    standardCalculator.clear();
+                } else if (e.key === '%') { // '%' ahora llama a performScientificOperation
+                    standardCalculator.performScientificOperation('%');
+                    e.preventDefault();
+                } else if (e.key === '^') { // Para la operación de potencia (x^y)
+                    standardCalculator.chooseOperation('^');
+                    e.preventDefault();
+                }
+                // Las teclas de flecha y otras se manejan de forma nativa por contenteditable
+            });
+
+            // Event listener para re-formatear el número cuando se pierde el foco del display
+            standardCurrentOperandTextElement.addEventListener('blur', () => {
+                const cleaned = cleanNumberString(standardCurrentOperandTextElement.innerText);
+                const valueToFormat = (cleaned === '' || cleaned === '.') ? '0' : cleaned;
+                standardCurrentOperandTextElement.innerText = standardCalculator.getDisplayNumber(parseFloat(valueToFormat) || 0);
+            });
+
+            // Previene la entrada de caracteres no deseados directamente en el contenteditable
+            standardCurrentOperandTextElement.addEventListener('input', (e) => {
+                const currentText = standardCurrentOperandTextElement.innerText;
+                const caretPos = getCaretPosition(standardCurrentOperandTextElement);
+                let cleanedText = currentText.replace(/,/g, '');
+                const parts = cleanedText.split('.');
+                if (parts.length > 2) {
+                    cleanedText = parts[0] + '.' + parts.slice(1).join('');
+                }
+                cleanedText = cleanedText.replace(/[^0-9.]/g, '');
+                if (cleanedText === '') {
+                    standardCurrentOperandTextElement.innerText = '0';
+                    setCaretPosition(standardCurrentOperandTextElement, 1);
+                    return;
+                }
+                if (cleanedText === '.') {
+                    standardCurrentOperandTextElement.innerText = '0.';
+                    setCaretPosition(standardCurrentOperandTextElement, 2);
+                    return;
+                }
+                if (standardCurrentOperandTextElement.innerText !== cleanedText) {
+                    standardCurrentOperandTextElement.innerText = cleanedText;
+                    setCaretPosition(standardCurrentOperandTextElement, caretPos - (currentText.length - cleanedText.length));
+                }
+            });
+
+
+            // Inicialización de Calculadora Decimal y Binaria
+            convertBinToDecBtn.addEventListener('click', () => {
+                binaryError.textContent = '';
+                const result = binToDec(binaryInput.value);
+                if (result.startsWith('Entrada') || result.startsWith('Error')) {
+                    binaryError.textContent = result;
+                    decimalOutput.value = '';
+                } else {
+                    decimalOutput.value = formatDecimalNumber(result);
+                }
+            });
+
+            convertDecToBinBtn.addEventListener('click', () => {
+                decimalError.textContent = '';
+                const cleanedDecimalValue = cleanBinaryDecimalNumber(decimalInput.value);
+                const result = decToBin(cleanedDecimalValue);
+                if (result.startsWith('Entrada') || result.startsWith('Error')) {
+                    decimalError.textContent = result;
+                    binaryOutput.value = '';
+                } else {
+                    binaryOutput.value = formatBinaryNumber(result);
+                }
+            });
+
+            convertTextToBinBtn.addEventListener('click', () => {
+                const result = textToBin(textInput.value);
+                textBinaryOutput.value = formatBinaryNumber(result);
+            });
+
+            convertBinToTextBtn.addEventListener('click', () => {
+                binaryTextError.textContent = '';
+                const result = binToText(binaryTextInput.value);
+                if (result.startsWith('Error')) {
+                    binaryTextError.textContent = result;
+                    textOutput.value = '';
+                } else {
+                    textOutput.value = result;
+                }
+            });
+
+            // Validaciones y formateo en tiempo real para calculadora binaria
+            binaryInput.addEventListener('input', (event) => {
+                const originalValue = event.target.value;
+                const cursorPosition = event.target.selectionStart;
+                const cleanedValue = originalValue.replace(/\s/g, '');
+                if (cleanedValue.length > 0 && !/^[01]+$/.test(cleanedValue)) {
+                    binaryError.textContent = 'Use solo 0 y 1 para binario.';
+                } else {
+                    binaryError.textContent = '';
+                }
+                let formattedValue = '';
+                if (cleanedValue.length > 0) {
+                    formattedValue = formatBinaryNumber(cleanedValue);
+                }
+                const diff = formattedValue.length - originalValue.length;
+                const newCursorPosition = Math.max(0, Math.min(formattedValue.length, cursorPosition + diff));
+                event.target.value = formattedValue;
+                event.target.setSelectionRange(newCursorPosition, newCursorPosition);
+            });
+
+            decimalInput.addEventListener('input', (event) => {
+                const originalValue = event.target.value;
+                const cursorPosition = event.target.selectionStart;
+                const cleanedValue = originalValue.replace(/\./g, '');
+                if (cleanedValue.length > 0 && !/^-?\d*$/.test(cleanedValue)) {
+                    decimalError.textContent = 'Use solo dígitos y un signo negativo opcional para decimal.';
+                } else {
+                    decimalError.textContent = '';
+                }
+                let formattedValue = '';
+                if (cleanedValue.length > 0) {
+                    formattedValue = formatDecimalNumber(cleanedValue);
+                }
+                const diff = formattedValue.length - originalValue.length;
+                const newCursorPosition = Math.max(0, Math.min(formattedValue.length, cursorPosition + diff));
+                event.target.value = formattedValue;
+                event.target.setSelectionRange(newCursorPosition, newCursorPosition);
+            });
+
+            binaryTextInput.addEventListener('input', (event) => {
+                let originalValue = event.target.value;
+                let cursorPosition = event.target.selectionStart;
+                let cleanedInput = originalValue.replace(/[^01\s]/g, '');
+                event.target.value = cleanedInput;
+                if (originalValue !== cleanedInput) {
+                    binaryTextError.textContent = 'Solo se permiten 0s, 1s y espacios.';
+                } else {
+                    binaryTextError.textContent = '';
+                }
+                event.target.setSelectionRange(cursorPosition, cursorPosition);
+            });
+
+            // Función global para limpiar todos los campos
+            clearAllBtn.addEventListener('click', () => {
+                // Limpiar Calculadora de Divisas
+                currencyAmountInput.value = formatNumberForDisplay(1);
+                fromCurrencySelect.value = 'USD';
+                toCurrencySelect.value = 'PEN';
+                currencyResultDiv.textContent = '';
+                hideCurrencyMessage();
+                currencyRateDisplayDiv.classList.add('hidden'); // Ocultar el campo de tasa al limpiar
+                convertCurrency(); // Realizar conversión inicial después de limpiar
+
+                // Limpiar Calculadora Estándar
+                standardCalculator.clear();
+                standardCalculator.clearHistory();
+
+                // Limpiar Calculadora Binaria/Decimal/Texto
+                binaryInput.value = '';
+                decimalOutput.value = '';
+                binaryError.textContent = '';
+                decimalInput.value = '';
+                binaryOutput.value = '';
+                decimalError.textContent = '';
+                textInput.value = '';
+                textBinaryOutput.value = '';
+                binaryTextInput.value = '';
+                textOutput.value = '';
+                binaryTextError.textContent = '';
+            });
+        });
+    </script>
+</body>
+</html>
